@@ -74,6 +74,25 @@ fn test_pixel_to_point() {
                Complex { re: -0.5, im: -0.5 });
 }
 
+fn render(pixels: &mut [u8],
+          bounds: (usize, usize),
+          upper_left: Complex<f64>,
+          lower_right: Complex<f64>)
+{
+    assert!(pixels.len() == bounds.0 * bounds.1);
+
+    for row in 0 .. bounds.1 {
+        for column in 0 .. bounds.0 {
+            let point = pixel_to_point(bounds, (column, row),
+                                       upper_left, lower_right);
+            pixels[row * bounds.0 + column] = match escape_time(point, 255) {
+                None => 0,
+                Some(count) => 255 - count as u8
+            };
+        }
+    }
+}
+
 fn main() {
     match escape_time(Complex { re: 3., im: 0.3 }, 10000) {
         Some(v) => println!("Not mandelbrot! count = {}", v),
